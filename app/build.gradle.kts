@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.timidgiraffe.chatmigo"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.timidgiraffe.chatmigo"
