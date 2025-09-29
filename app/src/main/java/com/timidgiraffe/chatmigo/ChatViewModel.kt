@@ -1,6 +1,5 @@
 package com.timidgiraffe.chatmigo
 
-import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.ai.client.generativeai.GenerativeModel
@@ -11,37 +10,33 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class BakingViewModel : ViewModel() {
-    private val _uiState: MutableStateFlow<UiState> =
-        MutableStateFlow(UiState.Initial)
-    val uiState: StateFlow<UiState> =
-        _uiState.asStateFlow()
+class ChatViewModel: ViewModel() {
+    private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Initial)
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    private val generativeModel = GenerativeModel(
+    private val generativeModel = GenerativeModel (
         modelName = "gemini-2.5-flash",
         apiKey = BuildConfig.apiKey
     )
 
-    fun sendPrompt(
-        bitmap: Bitmap,
-        prompt: String
-    ) {
+    fun sendPrompt(prompt: String?) {
         _uiState.value = UiState.Loading
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val response = generativeModel.generateContent(
                     content {
-                        image(bitmap)
-                        text(prompt)
+                        text(prompt ?: "")
                     }
                 )
                 response.text?.let { outputContent ->
                     _uiState.value = UiState.Success(outputContent)
                 }
+
             } catch (e: Exception) {
                 _uiState.value = UiState.Error(e.localizedMessage ?: "")
             }
         }
     }
+
 }
